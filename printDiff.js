@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 const TERMINATOR = '------';
 
 /**
@@ -31,32 +33,33 @@ export default function printDiff(lcs, A, B, DEBUG) {
         // Calculate deletions in this segment
         for (i = iPrev + 1; i < iCurrent; i++) {
             if (DEBUG) {
-                console.log(`- ${A[i]}`);
+                console.log(chalk.red(i, `- ${A[i]}`));
                 continue;
             }
             // Deletions
-            print[i] = `- ${A[i]}`
+            print[i] = chalk.red(`- ${A[i]}`)
         }
 
 
         // Calculate additions or changes in this segment
         for (j = jPrev + 1; j < jCurrent; j++) {
             if (DEBUG) {
-                console.log(`+ ${B[j]}`);
+                console.log(chalk.green(j, `+ ${B[j]}`));
                 continue;
             }
 
             if (!print[j]) {
                 // Additions
-                print[j] = `+ ${B[j]}`
+                print[j] = chalk.green(`+ ${B[j]}`)
             } else {
                 // The pourpose of this is to render changes
-                print[j] = print[j].replace('-', '*')  + ` | ${B[j]}`
+                let line = chalk.stripColor(print[j]);
+                print[j] = chalk.yellow(line.replace('-', '*')  + ` | ${B[j]}`)
             }
         }
 
         // Print the current solution
-        print[jCurrent] = `  ${B[jCurrent] || TERMINATOR}`;
+        print.push(`  ${B[jCurrent] || TERMINATOR}`);
 
         if (DEBUG) {
             console.log(TERMINATOR);
