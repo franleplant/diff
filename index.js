@@ -1,8 +1,18 @@
 import fs from 'fs';
 
+const DEBUG = false;
 const options = {encoding: 'utf-8'};
 const I_INDEX = 0;
 const J_INDEX = 1;
+
+/**
+ * @typedef commonSecuenceElement
+ * @type {object}
+ *
+ * @property {Array.<Number>} index - A pair of indeces corresponding to line numbers of files A and B respectively
+ * @property {Number} len - the length of the Longest Commong Secuence
+ * @property {Boolean} solution - Tell if the element is part of the solution
+ */
 
 // TODO: tidy up the output
 function diff(file1, file2) {
@@ -11,40 +21,39 @@ function diff(file1, file2) {
 
     A.pop();
     B.pop();
+    // TODO: document
+    A.unshift('')
+    B.unshift('')
 
     let m = A.length;
     let n = B.length;
+    console.log(m, A)
 
 
     let P = [];
     let ijEl;
 
     // rename this to lCs
-    let lsc = [];
+
+    /**
+     * @type {Array.<commonSecuenceElement>}
+     */
+    let lcs = [];
 
     // This calculates de LCS
-    /**
-     * @typedef commonSecuenceElement
-     * @type {object}
-     *
-     * @property {Array.<Number>} index - A pair of indeces corresponding to [i,j] where
-     *                                      i is a `1` based index corresponding to a line
-     *                                      number of the array A and j is a `1` based index
-     *                                      correspongint to a line number of the array B.
-     */
-    for (let i = 0; i <= m; i++) {
+    for (let i = 0; i < m; i++) {
         P[i] = [];
-        for (let j = 0; j <= n; j++) {
+        for (let j = 0; j < n; j++) {
             ijEl = {index: [i,j]};
 
-            //console.log(A[i-1], B[j-1])
+            console.log(i,A[i], j, B[j])
             if (i === 0 || j === 0) {
                 ijEl.len = 0;
-            } else if (A[i-1] === B[j-1]) {
+            } else if (A[i] === B[j]) {
                ijEl.len = 1 + P[i-1][j-1].len;
                ijEl.solution = true;
 
-               lsc.push(ijEl);
+               lcs.push(ijEl);
             } else {
                 let previousEl = P[i-1][j].len >= P[i][j-1].len ? P[i-1][j] : P[i][j-1];
                 ijEl.len = previousEl.len;
@@ -58,18 +67,17 @@ function diff(file1, file2) {
 
 
     // Print the diff
-    // TODO: fix or explain this `+1`
-    lsc.push({index: [m + 1, n + 1], solution: true})
-    console.log(lsc)
+    lcs.push({index: [m, n], solution: true})
+    console.log(lcs)
 
-    let lscLen = lsc.length;
+    let lcsLen = lcs.length;
     let i, j, iCurrent, jCurrent, iPrev, jPrev, k, sol, prevSol;
 
-    for (let l = 0; l < lscLen; l++) {
+    for (let l = 0; l < lcsLen; l++) {
         //console.log(`solution ${l}`)
 
-        sol = lsc[l];
-        prevSol = lsc[l - 1];
+        sol = lcs[l];
+        prevSol = lcs[l - 1];
 
         [iCurrent, jCurrent] = sol.index;
         [iPrev, jPrev] = prevSol ? prevSol.index : [0,0];
@@ -78,15 +86,23 @@ function diff(file1, file2) {
 
         let print = [];
         // Stop before reaching the solution
-        let iStop = iCurrent - 1;
-        for (i = iPrev; i < iStop; i++) {
+        let iStop = iCurrent;
+        for (i = iPrev + 1; i < iStop; i++) {
+            if (DEBUG) {
+                console.log(`- ${A[i]}`);
+                continue;
+            }
             print[i] = `- ${A[i]}`
         }
 
 
         //console.log(`File B`)
-        let jStop = jCurrent - 1;
-        for (j = jPrev; j < jStop; j++) {
+        let jStop = jCurrent;
+        for (j = jPrev + 1; j < jStop; j++) {
+            if (DEBUG) {
+                console.log(`+ ${B[j]}`);
+                continue;
+            }
             if (!print[j]) {
                 print[j] = `+ ${B[j]}`
             } else {
@@ -94,12 +110,14 @@ function diff(file1, file2) {
             }
         }
 
-        print[jCurrent] = `  ${B[jCurrent - 1]}`;
-        //console.log(jCurrent, B[jCurrent - 1])
+        // Print the solution
+        print[jCurrent] = `  ${B[jCurrent] || '-----'}`;
 
+        if (DEBUG) {
+            console.log('------');
+            continue;
+        }
         print.forEach(p => console.log(p));
-
-        //console.log('------')
 
     }
 }
