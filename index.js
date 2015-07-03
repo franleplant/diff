@@ -49,12 +49,15 @@ function diff(file1, file2) {
 
 
     // Print the diff
+    // TODO: fix or explain this `+1`
+    lsc.push({index: [m + 1, n + 1], solution: true})
     console.log(lsc)
 
     let lscLen = lsc.length;
     let i, j, iPrev, jPrev, k, sol, prevSol;
 
     for (let l = 0; l < lscLen; l++) {
+        console.log(`solution ${l}`)
         sol = lsc[l];
 
         [i, j] = sol.index;
@@ -62,7 +65,7 @@ function diff(file1, file2) {
         prevSol = lsc[l - 1];
         [iPrev, jPrev] = prevSol ? prevSol.index : [0,0];
 
-        console.log(`A, sol # ${l}: "${A[i]}"`)
+        console.log(`File A`)
 
 
         for (; iPrev < i-1; iPrev++) {
@@ -70,26 +73,9 @@ function diff(file1, file2) {
         }
 
 
-        console.log(`B, sol # ${l}: "${B[j]}"`)
+        console.log(`File B`)
         for (; jPrev < j-1; jPrev++) {
             console.log('+', B[jPrev])
-        }
-        console.log('------')
-
-        if (l !== lscLen - 1) {
-            continue;
-        }
-        console.log('last solution, going up now')
-        //let [i, j] = lsc[lscLen - 1].index;
-        console.log(`A, sol # last: "${A[i]}"`)
-
-        for (let k = i; k < m; k++) {
-            console.log('-', A[k])
-        }
-
-        console.log(`B, sol # last: "${B[j]}"`)
-        for (let k = j; k < n; k++) {
-            console.log('+', B[k])
         }
         console.log('------')
 
