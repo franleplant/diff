@@ -58,15 +58,14 @@ function diff(file1, file2) {
 
     for (let l = 0; l < lscLen; l++) {
         console.log(`solution ${l}`)
+
         sol = lsc[l];
+        prevSol = lsc[l - 1];
 
         [i, j] = sol.index;
-
-        prevSol = lsc[l - 1];
         [iPrev, jPrev] = prevSol ? prevSol.index : [0,0];
 
         console.log(`File A`)
-
 
         for (; iPrev < i-1; iPrev++) {
             console.log('-', A[iPrev])
