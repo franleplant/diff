@@ -53,7 +53,10 @@ export default function printDiff(lcs, A, B, DEBUG) {
                 print[j] = chalk.green(`+ ${B[j]}`)
             } else {
                 // The pourpose of this is to render changes
+                //
+                // Remove previous colors
                 let line = chalk.stripColor(print[j]);
+                // Format the change string
                 print[j] = chalk.yellow(line.replace('-', '*')  + ` | ${B[j]}`)
             }
         }
