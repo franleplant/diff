@@ -3,8 +3,6 @@ import printDiff from './printDiff.js';
 
 const DEBUG = false;
 const options = {encoding: 'utf-8'};
-//const I_INDEX = 0;
-//const J_INDEX = 1;
 
 /**
  * @typedef commonSecuenceElement
@@ -14,6 +12,12 @@ const options = {encoding: 'utf-8'};
  * @property {Number} len - the length of the Longest Commong Secuence
  * @property {Boolean} solution - Tell if the element is part of the solution
  */
+
+
+// Run the diff :)
+diff('./file1.txt', './file2.txt');
+
+
 
 
 /**
@@ -51,10 +55,12 @@ function diff(file1, file2) {
      * @description this will hold the solution
      */
     let lcs = [];
-    
+
     let previousEl;
 
     // This calculates de LCS
+    // This uses a basic algorithm of calculating the Pij array
+    // as exposed in the paper quoted in the README
     for (let i = 0; i < m; i++) {
         P[i] = [];
         for (let j = 0; j < n; j++) {
@@ -95,5 +101,3 @@ function diff(file1, file2) {
 }
 
 
-
-diff('./file1.txt', './file2.txt');
