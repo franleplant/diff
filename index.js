@@ -23,6 +23,15 @@ function diff(file1, file2) {
     let lsc = [];
 
     // This calculates de LCS
+    /**
+     * @typedef commonSecuenceElement
+     * @type {object}
+     *
+     * @property {Array.<Number>} index - A pair of indeces corresponding to [i,j] where
+     *                                      i is a `1` based index corresponding to a line
+     *                                      number of the array A and j is a `1` based index
+     *                                      correspongint to a line number of the array B.
+     */
     for (let i = 0; i <= m; i++) {
         P[i] = [];
         for (let j = 0; j <= n; j++) {
@@ -68,13 +77,16 @@ function diff(file1, file2) {
         //console.log(`File A`)
 
         let print = [];
-        for (i = iPrev; i < iCurrent - 1; i++) {
+        // Stop before reaching the solution
+        let iStop = iCurrent - 1;
+        for (i = iPrev; i < iStop; i++) {
             print[i] = `- ${A[i]}`
         }
 
 
         //console.log(`File B`)
-        for (j = jPrev; j < jCurrent - 1; j++) {
+        let jStop = jCurrent - 1;
+        for (j = jPrev; j < jStop; j++) {
             if (!print[j]) {
                 print[j] = `+ ${B[j]}`
             } else {
@@ -82,13 +94,10 @@ function diff(file1, file2) {
             }
         }
 
-        print[jCurrent] = `  ${B[jCurrent]}`;
+        print[jCurrent] = `  ${B[jCurrent - 1]}`;
+        //console.log(jCurrent, B[jCurrent - 1])
 
         print.forEach(p => console.log(p));
-        //let max = Math.max(i-1, j-1);
-        //for (; iPrev < max && jPrev < max; iPrev++ && jPrev++ ) {
-            
-        //}
 
         //console.log('------')
 
