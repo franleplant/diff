@@ -1,9 +1,10 @@
 import fs from 'fs';
+import printDiff from './printDiff.js';
 
 const DEBUG = false;
 const options = {encoding: 'utf-8'};
-const I_INDEX = 0;
-const J_INDEX = 1;
+//const I_INDEX = 0;
+//const J_INDEX = 1;
 
 /**
  * @typedef commonSecuenceElement
@@ -14,39 +15,55 @@ const J_INDEX = 1;
  * @property {Boolean} solution - Tell if the element is part of the solution
  */
 
-// TODO: tidy up the output
+
+/**
+ * @param {String} file1 - path to file1
+ * @param {String} file2 - path to file2
+ */
 function diff(file1, file2) {
     let A = fs.readFileSync(file1, options).split('\n');
     let B = fs.readFileSync(file2, options).split('\n');
 
+    // Remove the last lines of each array beacuse they are junk
     A.pop();
     B.pop();
-    // TODO: document
+    // Add a first fake line just for making the indexes of the array
+    // and the line numbers to match, this makes the work easier.
     A.unshift('')
     B.unshift('')
 
     let m = A.length;
     let n = B.length;
-    console.log(m, A)
-
-
-    let P = [];
-    let ijEl;
-
-    // rename this to lCs
 
     /**
      * @type {Array.<commonSecuenceElement>}
+     * @description this will hold all the iterated partial solutions
+     */
+    let P = [];
+
+    /**
+     * @type {commonSecuenceElement}
+     */
+    let ijEl;
+
+    /**
+     * @type {Array.<commonSecuenceElement>}
+     * @description this will hold the solution
      */
     let lcs = [];
+    
+    let previousEl;
 
     // This calculates de LCS
     for (let i = 0; i < m; i++) {
         P[i] = [];
         for (let j = 0; j < n; j++) {
-            ijEl = {index: [i,j]};
+            ijEl = { index: [i,j] };
 
-            console.log(i,A[i], j, B[j])
+            if (DEBUG) {
+                console.log('calc LCS', i,A[i], j, B[j])
+            }
+
             if (i === 0 || j === 0) {
                 ijEl.len = 0;
             } else if (A[i] === B[j]) {
@@ -55,71 +72,26 @@ function diff(file1, file2) {
 
                lcs.push(ijEl);
             } else {
-                let previousEl = P[i-1][j].len >= P[i][j-1].len ? P[i-1][j] : P[i][j-1];
+                previousEl = P[i-1][j].len >= P[i][j-1].len ? P[i-1][j] : P[i][j-1];
                 ijEl.len = previousEl.len;
             }
 
             P[i][j] = ijEl;
-            //console.log(ijEl)
         }
     }
 
 
 
     // Print the diff
+    // Add a fake solution at the end to make the diff construction
+    // more consice and shorter
     lcs.push({index: [m, n], solution: true})
-    console.log(lcs)
 
-    let lcsLen = lcs.length;
-    let i, j, iCurrent, jCurrent, iPrev, jPrev, k, sol, prevSol;
-
-    for (let l = 0; l < lcsLen; l++) {
-        //console.log(`solution ${l}`)
-
-        sol = lcs[l];
-        prevSol = lcs[l - 1];
-
-        [iCurrent, jCurrent] = sol.index;
-        [iPrev, jPrev] = prevSol ? prevSol.index : [0,0];
-
-        //console.log(`File A`)
-
-        let print = [];
-        // Stop before reaching the solution
-        let iStop = iCurrent;
-        for (i = iPrev + 1; i < iStop; i++) {
-            if (DEBUG) {
-                console.log(`- ${A[i]}`);
-                continue;
-            }
-            print[i] = `- ${A[i]}`
-        }
-
-
-        //console.log(`File B`)
-        let jStop = jCurrent;
-        for (j = jPrev + 1; j < jStop; j++) {
-            if (DEBUG) {
-                console.log(`+ ${B[j]}`);
-                continue;
-            }
-            if (!print[j]) {
-                print[j] = `+ ${B[j]}`
-            } else {
-                print[j] = print[j].replace('-', '*')  + ` | ${B[j]}`
-            }
-        }
-
-        // Print the solution
-        print[jCurrent] = `  ${B[jCurrent] || '-----'}`;
-
-        if (DEBUG) {
-            console.log('------');
-            continue;
-        }
-        print.forEach(p => console.log(p));
-
+    if (DEBUG) {
+        console.log('solution', lcs);
     }
+
+    printDiff(lcs, A, B, DEBUG);
 }
 
 
