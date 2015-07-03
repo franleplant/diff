@@ -54,29 +54,43 @@ function diff(file1, file2) {
     console.log(lsc)
 
     let lscLen = lsc.length;
-    let i, j, iPrev, jPrev, k, sol, prevSol;
+    let i, j, iCurrent, jCurrent, iPrev, jPrev, k, sol, prevSol;
 
     for (let l = 0; l < lscLen; l++) {
-        console.log(`solution ${l}`)
+        //console.log(`solution ${l}`)
 
         sol = lsc[l];
         prevSol = lsc[l - 1];
 
-        [i, j] = sol.index;
+        [iCurrent, jCurrent] = sol.index;
         [iPrev, jPrev] = prevSol ? prevSol.index : [0,0];
 
-        console.log(`File A`)
+        //console.log(`File A`)
 
-        for (; iPrev < i-1; iPrev++) {
-            console.log('-', A[iPrev])
+        let print = [];
+        for (i = iPrev; i < iCurrent - 1; i++) {
+            print[i] = `- ${A[i]}`
         }
 
 
-        console.log(`File B`)
-        for (; jPrev < j-1; jPrev++) {
-            console.log('+', B[jPrev])
+        //console.log(`File B`)
+        for (j = jPrev; j < jCurrent - 1; j++) {
+            if (!print[j]) {
+                print[j] = `+ ${B[j]}`
+            } else {
+                print[j] = print[j].replace('-', '*')  + ` | ${B[j]}`
+            }
         }
-        console.log('------')
+
+        print[jCurrent] = `  ${B[jCurrent]}`;
+
+        print.forEach(p => console.log(p));
+        //let max = Math.max(i-1, j-1);
+        //for (; iPrev < max && jPrev < max; iPrev++ && jPrev++ ) {
+            
+        //}
+
+        //console.log('------')
 
     }
 }
